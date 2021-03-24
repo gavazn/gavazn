@@ -14,11 +14,11 @@ import (
 // User model
 type User struct {
 	ID        primitive.ObjectID `bson:"_id"`
-	Role      primitive.ObjectID `bson:"_role"`
 	Name      string             `bson:"name"`
 	About     string             `bson:"about"`
 	Email     string             `bson:"email"`
 	Password  string             `bson:"password"`
+	SuperUser bool               `bson:"super_user"`
 	Thumbnail string             `bson:"thumbnail"`
 	CreatedAt time.Time          `bson:"created_at"`
 }
