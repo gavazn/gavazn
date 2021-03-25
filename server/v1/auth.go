@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/Gavazn/Gavazn/internal/user"
 	"github.com/Gavazn/Gavazn/utils"
@@ -53,10 +54,16 @@ func register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": errors.New("password not equal with repeat password").Error()})
 	}
 
+	email := strings.ToLower(form.Email)
+
+	if _, err := user.LoadByEmail(email); err == nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": errors.New("this email has already been registered").Error()})
+	}
+
 	u := &user.User{
 		Name:      form.Name,
 		About:     "",
-		Email:     form.Email,
+		Email:     email,
 		Password:  passwd.Make(form.Password),
 		SuperUser: false,
 		Thumbnail: "",
@@ -103,7 +110,7 @@ func login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	u, err := user.AuthByEmail(form.Email, form.Password)
+	u, err := user.AuthByEmail(strings.ToLower(form.Email), form.Password)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
