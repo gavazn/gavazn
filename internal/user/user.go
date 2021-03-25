@@ -13,14 +13,14 @@ import (
 
 // User model
 type User struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Name      string             `bson:"name"`
-	About     string             `bson:"about"`
-	Email     string             `bson:"email"`
-	Password  string             `bson:"password"`
-	SuperUser bool               `bson:"super_user"`
-	Thumbnail string             `bson:"thumbnail"`
-	CreatedAt time.Time          `bson:"created_at"`
+	ID        primitive.ObjectID `bson:"_id" json:"id"`
+	Name      string             `bson:"name" json:"name"`
+	About     string             `bson:"about" json:"about"`
+	Email     string             `bson:"email" json:"email"`
+	Password  string             `bson:"password" json:"-"`
+	SuperUser bool               `bson:"super_user" json:"super_user"`
+	Thumbnail string             `bson:"thumbnail" json:"thumbnail"`
+	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 
 func (u *User) collection() *mongo.Collection {
