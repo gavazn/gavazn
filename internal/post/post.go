@@ -31,14 +31,14 @@ type Thumbnail struct {
 	Small    string `bson:"small" json:"small" form:"small"`
 }
 
-func (u *Post) collection() *mongo.Collection {
+func (p *Post) collection() *mongo.Collection {
 	return database.Connection.Collection("posts")
 }
 
 // Count posts
 func Count(filter bson.M) int {
-	u := new(Post)
-	count, _ := u.collection().CountDocuments(context.Background(), filter)
+	p := new(Post)
+	count, _ := p.collection().CountDocuments(context.Background(), filter)
 	return int(count)
 }
 
@@ -61,20 +61,20 @@ func Find(filter bson.M, page, limit int, sorts ...bson.E) []Post {
 		opt.SetSkip(int64((page - 1) * limit))
 	}
 
-	u := new(Post)
-	cursor, err := u.collection().Find(context.Background(), filter, opt)
+	p := new(Post)
+	cursor, err := p.collection().Find(context.Background(), filter, opt)
 	if err != nil {
 		return nil
 	}
 
 	posts := []Post{}
 	for cursor.Next(context.Background()) {
-		u := new(Post)
-		if err := cursor.Decode(u); err != nil {
+		p := new(Post)
+		if err := cursor.Decode(p); err != nil {
 			continue
 		}
 
-		posts = append(posts, *u)
+		posts = append(posts, *p)
 	}
 
 	return posts
@@ -82,40 +82,40 @@ func Find(filter bson.M, page, limit int, sorts ...bson.E) []Post {
 
 // FindOne post
 func FindOne(filter bson.M) (*Post, error) {
-	u := new(Post)
-	if err := u.collection().FindOne(context.Background(), filter).Decode(u); err != nil {
+	p := new(Post)
+	if err := p.collection().FindOne(context.Background(), filter).Decode(p); err != nil {
 		return nil, err
 	}
 
-	return u, nil
+	return p, nil
 }
 
 // Insert new Post
-func (u *Post) Insert() error {
-	u.ID = primitive.NewObjectID()
-	u.CreatedAt = time.Now()
+func (p *Post) Insert() error {
+	p.ID = primitive.NewObjectID()
+	p.CreatedAt = time.Now()
 
-	_, err := u.collection().InsertOne(context.Background(), database.Bson(u))
+	_, err := p.collection().InsertOne(context.Background(), database.Bson(p))
 	return err
 }
 
 // Update a Post
-func (u *Post) Update() error {
-	_, err := u.collection().UpdateOne(context.Background(), bson.M{"_id": u.ID}, bson.M{"$set": database.Bson(u)})
+func (p *Post) Update() error {
+	_, err := p.collection().UpdateOne(context.Background(), bson.M{"_id": p.ID}, bson.M{"$set": database.Bson(p)})
 	return err
 }
 
 // Save a Post insert or update
-func (u *Post) Save() error {
-	if u.ID.IsZero() {
-		return u.Insert()
+func (p *Post) Save() error {
+	if p.ID.IsZero() {
+		return p.Insert()
 	}
 
-	return u.Update()
+	return p.Update()
 }
 
 // Delete a post
-func (u *Post) Delete() error {
-	_, err := u.collection().DeleteOne(context.Background(), bson.M{"_id": u.ID})
+func (p *Post) Delete() error {
+	_, err := p.collection().DeleteOne(context.Background(), bson.M{"_id": p.ID})
 	return err
 }
