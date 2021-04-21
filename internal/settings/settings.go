@@ -40,8 +40,8 @@ func findOne() (*Setting, error) {
 	return s, nil
 }
 
-// Setter save setting data
-func (s *Setting) Setter() error {
+// Set save setting data
+func (s *Setting) Set() error {
 	set, err := findOne()
 	if err != nil {
 		return s.insert()
@@ -52,8 +52,8 @@ func (s *Setting) Setter() error {
 	return s.update()
 }
 
-// Getter get setting data
-func Getter() (*Setting, error) {
+// Get get setting data
+func Get() (*Setting, error) {
 	s, err := findOne()
 	if err != nil {
 		s = &Setting{}
