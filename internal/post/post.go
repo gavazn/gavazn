@@ -17,17 +17,18 @@ type Post struct {
 	Author    primitive.ObjectID   `bson:"_author" json:"author"`
 	Title     string               `bson:"title" json:"title"`
 	Content   string               `bson:"content" json:"content"`
-	Category  []primitive.ObjectID `bson:"category" json:"category"`
+	Category  []primitive.ObjectID `bson:"_category" json:"category"`
 	Tags      []string             `bson:"tags" json:"tags"`
-	Thumbnail thumbnail            `bson:"thumbnail" json:"thumbnail"`
+	Thumbnail Thumbnail            `bson:"thumbnail" json:"thumbnail"`
 	CreatedAt time.Time            `bson:"created_at" json:"created_at"`
 }
 
-type thumbnail struct {
-	Original string `bson:"original" json:"original"`
-	Large    string `bson:"large" json:"large"`
-	Medium   string `bson:"medium" json:"medium"`
-	Small    string `bson:"small" json:"small"`
+// Thumbnail model
+type Thumbnail struct {
+	Original string `bson:"original" json:"original" form:"original"`
+	Large    string `bson:"large" json:"large" form:"large"`
+	Medium   string `bson:"medium" json:"medium" form:"medium"`
+	Small    string `bson:"small" json:"small" form:"small"`
 }
 
 func (u *Post) collection() *mongo.Collection {
