@@ -19,4 +19,6 @@ func Register(e *echo.Echo) {
 	r := v1.Group("/")
 	r.Use(middleware.JWT(secretKey), checkSorts, setUser)
 
+	postGroup := r.Group("posts")
+	postGroup.POST("", addPost)
 }
