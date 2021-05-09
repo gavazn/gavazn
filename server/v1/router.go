@@ -20,6 +20,7 @@ func Register(e *echo.Echo) {
 	r.Use(middleware.JWT(secretKey), checkSorts, setUser)
 
 	postGroup := r.Group("posts")
+	postGroup.GET("", listPosts)
 	postGroup.POST("", addPost)
 	postGroup.PUT("/:id", editPost)
 	postGroup.GET("/:id", getPost)

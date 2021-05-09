@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Gavazn/Gavazn/internal/post"
 	"github.com/Gavazn/Gavazn/internal/user"
@@ -134,5 +135,42 @@ func getPost(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"post": p,
+	})
+}
+
+/**
+ * @api {get} /api/v1/posts list of posts
+ * @apiVersion 1.0.0
+ * @apiName listPosts
+ * @apiGroup Post
+ *
+ * @apiParam {String} q query search
+ * @apiParam {Number} page list page
+ * @apiParam {Number} limit list limit
+ * @apiParam {String} sort sort list example -created,title,...
+ *
+ * @apiSuccess {Number} page page number
+ * @apiSuccess {Number} total_count total number of results
+ * @apiSuccess {Object[]} posts array of post model
+ *
+ * @apiError {String} error api error message
+ */
+func listPosts(ctx echo.Context) error {
+	filter := bson.M{}
+
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+
+	if q := ctx.QueryParam("q"); q != "" {
+		filter["$text"] = bson.M{"$search": q}
+	}
+
+	posts := post.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
+	count := post.Count(filter)
+
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"posts":       posts,
+		"page":        page,
+		"total_count": count,
 	})
 }
