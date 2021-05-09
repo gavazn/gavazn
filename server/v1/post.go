@@ -139,6 +139,36 @@ func getPost(ctx echo.Context) error {
 }
 
 /**
+ * @api {delete} /api/v1/posts/:id remove post
+ * @apiVersion 1.0.0
+ * @apiName removePost
+ * @apiGroup Post
+ *
+ * @apiSuccess {String} message success message.
+ *
+ * @apiError {String} error api error message
+ */
+func removePost(ctx echo.Context) error {
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	}
+
+	p, err := post.FindOne(bson.M{"_id": id})
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, echo.Map{"error": err.Error()})
+	}
+
+	if err := p.Delete(); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"message": "post removed successfully",
+	})
+}
+
+/**
  * @api {get} /api/v1/posts list of posts
  * @apiVersion 1.0.0
  * @apiName listPosts

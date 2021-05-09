@@ -24,4 +24,5 @@ func Register(e *echo.Echo) {
 	postGroup.POST("", addPost)
 	postGroup.PUT("/:id", editPost)
 	postGroup.GET("/:id", getPost)
+	postGroup.DELETE("/:id", removePost)
 }
