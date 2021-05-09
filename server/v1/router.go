@@ -22,4 +22,5 @@ func Register(e *echo.Echo) {
 	postGroup := r.Group("posts")
 	postGroup.POST("", addPost)
 	postGroup.PUT("/:id", editPost)
+	postGroup.GET("/:id", getPost)
 }

@@ -63,7 +63,7 @@ func addPost(ctx echo.Context) error {
 }
 
 /**
- * @api {put} /api/v1/posts edit post
+ * @api {put} /api/v1/posts/:id edit post
  * @apiVersion 1.0.0
  * @apiName editPost
  * @apiGroup Post
@@ -108,5 +108,31 @@ func editPost(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "post updated successfully",
 		"post":    p,
+	})
+}
+
+/**
+ * @api {get} /api/v1/posts/:id get a post
+ * @apiVersion 1.0.0
+ * @apiName getPost
+ * @apiGroup Post
+ *
+ * @apiSuccess {Object} post post model
+ *
+ * @apiError {String} error api error message
+ */
+func getPost(ctx echo.Context) error {
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	}
+
+	p, err := post.FindOne(bson.M{"_id": id})
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, echo.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"post": p,
 	})
 }
