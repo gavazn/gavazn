@@ -13,22 +13,14 @@ import (
 
 // Post Model
 type Post struct {
-	ID        primitive.ObjectID   `bson:"_id" json:"id"`
-	Author    primitive.ObjectID   `bson:"_author" json:"author"`
-	Title     string               `bson:"title" json:"title"`
-	Content   string               `bson:"content" json:"content"`
-	Category  []primitive.ObjectID `bson:"_category" json:"category"`
-	Tags      []string             `bson:"tags" json:"tags"`
-	Thumbnail Thumbnail            `bson:"thumbnail" json:"thumbnail"`
-	CreatedAt time.Time            `bson:"created_at" json:"created_at"`
-}
-
-// Thumbnail model
-type Thumbnail struct {
-	Original string `bson:"original" json:"original" form:"original"`
-	Large    string `bson:"large" json:"large" form:"large"`
-	Medium   string `bson:"medium" json:"medium" form:"medium"`
-	Small    string `bson:"small" json:"small" form:"small"`
+	ID         primitive.ObjectID   `bson:"_id" json:"id"`
+	User       primitive.ObjectID   `bson:"_user" json:"user"`
+	Title      string               `bson:"title" json:"title"`
+	Content    string               `bson:"content" json:"content"`
+	Categories []primitive.ObjectID `bson:"_categories" json:"categories"`
+	Tags       []string             `bson:"tags" json:"tags"`
+	Thumbnail  primitive.ObjectID   `bson:"thumbnail" json:"thumbnail"`
+	CreatedAt  time.Time            `bson:"created_at" json:"created_at"`
 }
 
 func (p *Post) collection() *mongo.Collection {
