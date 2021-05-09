@@ -2,9 +2,13 @@ package user
 
 import (
 	"errors"
+	"net/http"
 
+	"github.com/Gavazn/Gavazn/utils"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jeyem/passwd"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // LoadByEmail load by email
@@ -26,4 +30,21 @@ func AuthByEmail(email, password string) (*User, error) {
 	}
 
 	return u, nil
+}
+
+// LoadByRequest load user from reqeust
+func LoadByRequest(req *http.Request) (*User, error) {
+	token, err := utils.ParseToken(req)
+	if err != nil {
+		return nil, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	id, err := primitive.ObjectIDFromHex(claims["jti"].(string))
+	if err != nil {
+		return nil, err
+	}
+
+	return FindOne(bson.M{"_id": id})
 }
