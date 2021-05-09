@@ -27,3 +27,12 @@ func GetToken(req *http.Request) string {
 	cleared := strings.Replace(req.Header.Get("Authorization"), " ", "", -1)
 	return strings.Replace(cleared, "Bearer", "", -1)
 }
+
+// ParseToken parse token from request
+func ParseToken(req *http.Request) (*jwt.Token, error) {
+	tokenStr := GetToken(req)
+
+	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.Get("SECRET_KEY")), nil
+	})
+}
