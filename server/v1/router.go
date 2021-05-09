@@ -1,6 +1,12 @@
 package v1
 
-import "github.com/labstack/echo"
+import (
+	"github.com/Gavazn/Gavazn/config"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+)
+
+var secretKey = []byte(config.Get("SECRET_KEY"))
 
 // Register routes
 func Register(e *echo.Echo) {
@@ -9,4 +15,8 @@ func Register(e *echo.Echo) {
 	authGroup := v1.Group("/auth")
 	authGroup.POST("/register", register)
 	authGroup.POST("/login", login)
+
+	r := v1.Group("/")
+	r.Use(middleware.JWT(secretKey), checkSorts, setUser)
+
 }
