@@ -25,4 +25,11 @@ func Register(e *echo.Echo) {
 	postGroup.PUT("/:id", editPost)
 	postGroup.GET("/:id", getPost)
 	postGroup.DELETE("/:id", removePost)
+
+	categoryGroup := r.Group("categories")
+	categoryGroup.GET("", listCategories)
+	categoryGroup.POST("", addCategory)
+	categoryGroup.PUT("/:id", editCategory)
+	categoryGroup.GET("/:id", getCategory)
+	categoryGroup.DELETE("/:id", removeCategory)
 }
