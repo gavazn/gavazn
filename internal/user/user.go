@@ -19,7 +19,7 @@ type User struct {
 	Email     string             `bson:"email" json:"email"`
 	Password  string             `bson:"password" json:"-"`
 	SuperUser bool               `bson:"super_user" json:"super_user"`
-	Thumbnail string             `bson:"thumbnail" json:"thumbnail"`
+	Thumbnail primitive.ObjectID `bson:"thumbnail" json:"thumbnail"`
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 
@@ -58,7 +58,7 @@ func (u *User) Save() error {
 }
 
 // DeleteOne a user
-func (u *User) DeleteOne() error {
+func (u *User) Delete() error {
 	_, err := u.collection().DeleteOne(context.Background(), bson.M{"_id": u.ID})
 	return err
 }
