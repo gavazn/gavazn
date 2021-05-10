@@ -22,6 +22,7 @@ func Register(e *echo.Echo) {
 	profileGroup := r.Group("profile")
 	profileGroup.GET("", getProfile)
 	profileGroup.PUT("", editProfile)
+	profileGroup.PATCH("/change-password", changePassword)
 
 	postGroup := r.Group("posts")
 	postGroup.GET("", listPosts)
