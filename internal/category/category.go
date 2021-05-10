@@ -14,6 +14,7 @@ import (
 // Category Model
 type Category struct {
 	ID        primitive.ObjectID `bson:"_id" json:"id"`
+	User      primitive.ObjectID `bson:"_user" json:"user"`
 	Parent    primitive.ObjectID `bson:"_parent" json:"parent"`
 	Name      string             `bson:"name" json:"name"`
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
