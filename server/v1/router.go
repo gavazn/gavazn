@@ -19,6 +19,10 @@ func Register(e *echo.Echo) {
 	r := v1.Group("/")
 	r.Use(middleware.JWT(secretKey), checkSorts, setUser)
 
+	profileGroup := r.Group("profile")
+	profileGroup.GET("", getProfile)
+	profileGroup.PUT("", editProfile)
+
 	postGroup := r.Group("posts")
 	postGroup.GET("", listPosts)
 	postGroup.POST("", addPost)
