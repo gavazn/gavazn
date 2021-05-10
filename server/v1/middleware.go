@@ -10,8 +10,8 @@ import (
 )
 
 func checkSorts(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		sorts := strings.Split(c.QueryParam("sort"), ",")
+	return func(ctx echo.Context) error {
+		sorts := strings.Split(ctx.QueryParam("sort"), ",")
 		sort := bson.D{}
 		for _, s := range sorts {
 			if s == "" {
@@ -27,19 +27,19 @@ func checkSorts(next echo.HandlerFunc) echo.HandlerFunc {
 			sort = append(sort, bson.E{Key: key, Value: value})
 		}
 
-		c.Set("sort", sort)
-		return next(c)
+		ctx.Set("sort", sort)
+		return next(ctx)
 	}
 }
 
 func setUser(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		u, err := user.LoadByRequest(c.Request())
+	return func(ctx echo.Context) error {
+		u, err := user.LoadByRequest(ctx.Request())
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, echo.Map{"error": "loading user from token " + err.Error()})
+			return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "loading user from token " + err.Error()})
 		}
 
-		c.Set("user", u)
-		return next(c)
+		ctx.Set("user", u)
+		return next(ctx)
 	}
 }

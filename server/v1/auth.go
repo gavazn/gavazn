@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -40,24 +39,24 @@ type loginForm struct {
  *
  * @apiError {String} error message
  */
-func register(c echo.Context) error {
+func register(ctx echo.Context) error {
 	form := new(registerForm)
-	if err := c.Bind(form); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	if err := c.Validate(form); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	if err := ctx.Validate(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
 	if form.Password != form.RepeatPassword {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": errors.New("password not equal with repeat password").Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "password not equal with repeat password"})
 	}
 
 	email := strings.ToLower(form.Email)
 
 	if _, err := user.LoadByEmail(email); err == nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": errors.New("this email has already been registered").Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "this email has already been registered"})
 	}
 
 	u := &user.User{
@@ -70,15 +69,15 @@ func register(c echo.Context) error {
 	}
 
 	if err := u.Save(); err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 
 	t, err := utils.CreateToken(u.ID.Hex())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
+	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "successfully registered",
 		"token":   t,
 		"user":    u,
@@ -100,27 +99,27 @@ func register(c echo.Context) error {
  *
  * @apiError {String} error message
  */
-func login(c echo.Context) error {
+func login(ctx echo.Context) error {
 	form := new(loginForm)
-	if err := c.Bind(form); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	if err := c.Validate(form); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	if err := ctx.Validate(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
 	u, err := user.AuthByEmail(strings.ToLower(form.Email), form.Password)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
 	t, err := utils.CreateToken(u.ID.Hex())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
+	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "successfully login",
 		"token":   t,
 		"user":    u,
