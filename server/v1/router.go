@@ -31,6 +31,10 @@ func Register(e *echo.Echo) {
 	userGroup.GET("/:id", getUser)
 	userGroup.DELETE("/:id", removeUser)
 
+	settingGroup := r.Group("settings")
+	settingGroup.GET("", getSetting)
+	settingGroup.PUT("", setSetting)
+
 	postGroup := r.Group("posts")
 	postGroup.GET("", listPosts)
 	postGroup.POST("", addPost)
