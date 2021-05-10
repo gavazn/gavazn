@@ -56,7 +56,7 @@ func register(ctx echo.Context) error {
 	email := strings.ToLower(form.Email)
 
 	if _, err := user.LoadByEmail(email); err == nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "this email has already been registered"})
+		return ctx.JSON(http.StatusNotFound, echo.Map{"error": "this email has already been registered"})
 	}
 
 	u := &user.User{
@@ -65,7 +65,6 @@ func register(ctx echo.Context) error {
 		Email:     email,
 		Password:  passwd.Make(form.Password),
 		SuperUser: false,
-		Thumbnail: "",
 	}
 
 	if err := u.Save(); err != nil {
