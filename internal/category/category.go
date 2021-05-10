@@ -20,17 +20,17 @@ type Category struct {
 }
 
 func (c *Category) collection() *mongo.Collection {
-	return database.Connection.Collection("categorys")
+	return database.Connection.Collection("categories")
 }
 
-// Count categorys
+// Count categories
 func Count(filter bson.M) int {
 	c := new(Category)
 	count, _ := c.collection().CountDocuments(context.Background(), filter)
 	return int(count)
 }
 
-// Find categorys
+// Find categories
 func Find(filter bson.M, page, limit int, sorts ...bson.E) []Category {
 	var sort bson.D
 	if len(sorts) < 1 {
@@ -55,17 +55,17 @@ func Find(filter bson.M, page, limit int, sorts ...bson.E) []Category {
 		return nil
 	}
 
-	categorys := []Category{}
+	categories := []Category{}
 	for cursor.Next(context.Background()) {
 		c := new(Category)
 		if err := cursor.Decode(c); err != nil {
 			continue
 		}
 
-		categorys = append(categorys, *c)
+		categories = append(categories, *c)
 	}
 
-	return categorys
+	return categories
 }
 
 // FindOne category
