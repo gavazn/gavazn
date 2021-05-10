@@ -53,4 +53,10 @@ func Register(e *echo.Echo) {
 	categoryGroup.PUT("/:id", editCategory)
 	categoryGroup.GET("/:id", getCategory)
 	categoryGroup.DELETE("/:id", removeCategory)
+
+	mediaGroup := r.Group("medias")
+	mediaGroup.GET("", listMedias)
+	mediaGroup.POST("", addMedia)
+	mediaGroup.GET("/:id", getMedia)
+	mediaGroup.DELETE("/:id", removeMedia)
 }
