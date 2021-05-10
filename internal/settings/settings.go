@@ -14,7 +14,7 @@ type Setting struct {
 	ID          primitive.ObjectID `bson:"_id" json:"-"`
 	Title       string             `bson:"title" json:"title"`
 	Description string             `bson:"description" json:"description"`
-	Logo        string             `bson:"logo" json:"logo"`
+	Logo        primitive.ObjectID `bson:"logo" json:"logo"`
 }
 
 func (s *Setting) collection() *mongo.Collection {
