@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Gavazn/Gavazn/internal/category"
+	"github.com/Gavazn/Gavazn/internal/media"
 	"github.com/Gavazn/Gavazn/internal/post"
 	"github.com/Gavazn/Gavazn/internal/user"
 	"github.com/labstack/echo"
@@ -17,6 +19,23 @@ type postForm struct {
 	Categories []primitive.ObjectID `json:"categories" form:"categories"`
 	Tags       []string             `json:"tags" form:"tags"`
 	Thumbnail  primitive.ObjectID   `json:"thumbnail" form:"thumbnail"`
+}
+
+func postToJSON(p post.Post) bson.M {
+	u, _ := user.FindOne(bson.M{"_id": p.User})
+	categories := category.Find(bson.M{"_id": bson.M{"$in": p.Categories}}, 1, -1)
+	t, _ := media.FindOne(bson.M{"_id": p.Thumbnail})
+
+	return bson.M{
+		"id":         p.ID.Hex(),
+		"user":       u,
+		"title":      p.Title,
+		"content":    p.Content,
+		"categories": categories,
+		"tags":       p.Tags,
+		"thumbnail":  t,
+		"created_at": p.CreatedAt,
+	}
 }
 
 /**
@@ -59,7 +78,7 @@ func addPost(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "post created successfully",
-		"post":    p,
+		"post":    postToJSON(*p),
 	})
 }
 
@@ -108,7 +127,7 @@ func editPost(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "post updated successfully",
-		"post":    p,
+		"post":    postToJSON(*p),
 	})
 }
 
@@ -134,7 +153,7 @@ func getPost(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"post": p,
+		"post": postToJSON(*p),
 	})
 }
 
@@ -198,8 +217,13 @@ func listPosts(ctx echo.Context) error {
 	posts := post.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
 	count := post.Count(filter)
 
+	response := []bson.M{}
+	for _, p := range posts {
+		response = append(response, postToJSON(p))
+	}
+
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"posts":       posts,
+		"posts":       response,
 		"page":        page,
 		"total_count": count,
 	})
