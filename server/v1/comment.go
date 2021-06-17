@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Gavazn/Gavazn/internal/comment"
+	"github.com/Gavazn/Gavazn/internal/post"
 	"github.com/Gavazn/Gavazn/internal/user"
 	"github.com/labstack/echo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,6 +14,19 @@ import (
 
 type commentForm struct {
 	Content string `json:"content" form:"content"`
+}
+
+func commentToJSON(c comment.Comment) bson.M {
+	u, _ := user.FindOne(bson.M{"_id": c.User})
+	p, _ := post.FindOne(bson.M{"_id": c.Post})
+
+	return bson.M{
+		"id":         c.ID.Hex(),
+		"user":       u,
+		"post":       p,
+		"content":    c.Content,
+		"created_at": c.CreatedAt,
+	}
 }
 
 /**
@@ -53,7 +67,7 @@ func addComment(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "comment created successfully",
-		"comment": c,
+		"comment": commentToJSON(*c),
 	})
 }
 
@@ -122,8 +136,13 @@ func listComments(ctx echo.Context) error {
 	comments := comment.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
 	count := comment.Count(filter)
 
+	response := []bson.M{}
+	for _, c := range comments {
+		response = append(response, commentToJSON(c))
+	}
+
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"comments":    comments,
+		"comments":    response,
 		"page":        page,
 		"total_count": count,
 	})
