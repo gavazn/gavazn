@@ -11,6 +11,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func mediaToJSON(m media.Media) bson.M {
+	u, _ := user.FindOne(bson.M{"_id": m.User})
+
+	return bson.M{
+		"id":         m.ID.Hex(),
+		"user":       u,
+		"name":       m.Name,
+		"paths":      m.Paths,
+		"type":       m.Type,
+		"size":       m.Size,
+		"created_at": m.CreatedAt,
+	}
+}
+
 /**
  * @api {post} /api/v1/medias add media
  * @apiVersion 1.0.0
@@ -51,7 +65,7 @@ func addMedia(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "media created successfully",
-		"media":   m,
+		"media":   mediaToJSON(*m),
 	})
 }
 
@@ -77,7 +91,7 @@ func getMedia(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"media": m,
+		"media": mediaToJSON(*m),
 	})
 }
 
@@ -141,8 +155,13 @@ func listMedias(ctx echo.Context) error {
 	medias := media.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
 	count := media.Count(filter)
 
+	response := []bson.M{}
+	for _, m := range medias {
+		response = append(response, mediaToJSON(m))
+	}
+
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"medias":      medias,
+		"medias":      response,
 		"page":        page,
 		"total_count": count,
 	})

@@ -19,7 +19,7 @@ type Media struct {
 	Paths     Path               `bson:"paths" json:"paths"`
 	Type      string             `bson:"type" json:"type"`
 	Size      int64              `bson:"size" json:"size"`
-	CreatedAt time.Time          `bson:"created" json:"created"`
+	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 
 func (m *Media) collection() *mongo.Collection {
