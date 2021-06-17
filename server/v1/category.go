@@ -16,6 +16,19 @@ type categoryForm struct {
 	Name   string             `json:"name" form:"name"`
 }
 
+func categoryToJSON(c category.Category) bson.M {
+	u, _ := user.FindOne(bson.M{"_id": c.User})
+	parent, _ := category.FindOne(bson.M{"_id": c.Parent})
+
+	return bson.M{
+		"id":         c.ID.Hex(),
+		"user":       u,
+		"parent":     parent,
+		"name":       c.Name,
+		"created_at": c.CreatedAt,
+	}
+}
+
 /**
  * @api {post} /api/v1/categories add category
  * @apiVersion 1.0.0
@@ -50,7 +63,7 @@ func addCategory(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message":  "category created successfully",
-		"category": c,
+		"category": categoryToJSON(*c),
 	})
 }
 
@@ -93,7 +106,7 @@ func editCategory(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message":  "category updated successfully",
-		"category": c,
+		"category": categoryToJSON(*c),
 	})
 }
 
@@ -119,7 +132,7 @@ func getCategory(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"category": c,
+		"category": categoryToJSON(*c),
 	})
 }
 
@@ -183,8 +196,13 @@ func listCategories(ctx echo.Context) error {
 	categories := category.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
 	count := category.Count(filter)
 
+	response := []bson.M{}
+	for _, c := range categories {
+		response = append(response, categoryToJSON(c))
+	}
+
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"categories":  categories,
+		"categories":  response,
 		"page":        page,
 		"total_count": count,
 	})
