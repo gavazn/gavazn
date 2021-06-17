@@ -79,7 +79,7 @@ func register(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "successfully registered",
 		"token":   t,
-		"user":    u,
+		"user":    userToJSON(*u),
 	})
 }
 
@@ -121,6 +121,6 @@ func login(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "successfully login",
 		"token":   t,
-		"user":    u,
+		"user":    userToJSON(*u),
 	})
 }
