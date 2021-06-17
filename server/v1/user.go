@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Gavazn/Gavazn/internal/media"
 	"github.com/Gavazn/Gavazn/internal/user"
 	"github.com/jeyem/passwd"
 	"github.com/labstack/echo"
@@ -33,6 +34,21 @@ type changePasswordForm struct {
 	RepeatPassword string `json:"repeat_password" form:"repeat_password" validate:"required"`
 }
 
+func userToJSON(u user.User) bson.M {
+	t, _ := media.FindOne(bson.M{"_id": u.Thumbnail})
+
+	return bson.M{
+		"id":         u.ID.Hex(),
+		"name":       u.Name,
+		"about":      u.About,
+		"email":      u.Email,
+		"password":   u.Password,
+		"super_user": u.SuperUser,
+		"thumbnail":  t,
+		"created_at": u.CreatedAt,
+	}
+}
+
 /**
  * @api {get} /api/v1/profile get current user
  * @apiVersion 1.0.0
@@ -47,7 +63,7 @@ func getProfile(ctx echo.Context) error {
 	u := ctx.Get("user").(*user.User)
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"user": u,
+		"user": userToJSON(*u),
 	})
 }
 
@@ -84,7 +100,7 @@ func editProfile(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "user updated successfully",
-		"user":    u,
+		"user":    userToJSON(*u),
 	})
 }
 
@@ -182,7 +198,7 @@ func addUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "user created successfully",
-		"user":    u,
+		"user":    userToJSON(*u),
 	})
 }
 
@@ -227,7 +243,7 @@ func editUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "user updated successfully",
-		"user":    u,
+		"user":    userToJSON(*u),
 	})
 }
 
@@ -253,7 +269,7 @@ func getUser(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"user": u,
+		"user": userToJSON(*u),
 	})
 }
 
@@ -317,8 +333,13 @@ func listUsers(ctx echo.Context) error {
 	users := user.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
 	count := user.Count(filter)
 
+	response := []bson.M{}
+	for _, u := range users {
+		response = append(response, userToJSON(u))
+	}
+
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"users":       users,
+		"users":       response,
 		"page":        page,
 		"total_count": count,
 	})
