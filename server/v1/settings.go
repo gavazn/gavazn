@@ -3,8 +3,10 @@ package v1
 import (
 	"net/http"
 
+	"github.com/Gavazn/Gavazn/internal/media"
 	"github.com/Gavazn/Gavazn/internal/settings"
 	"github.com/labstack/echo"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -12,6 +14,17 @@ type settingForm struct {
 	Title       string             `json:"title" form:"title"`
 	Description string             `json:"description" form:"description"`
 	Logo        primitive.ObjectID `json:"logo" form:"logo"`
+}
+
+func settingToJSON(s settings.Setting) bson.M {
+	l, _ := media.FindOne(bson.M{"_id": s.Logo})
+
+	return bson.M{
+		"id":          s.ID.Hex(),
+		"title":       s.Title,
+		"description": s.Description,
+		"logo":        l,
+	}
 }
 
 /**
@@ -31,7 +44,7 @@ func getSetting(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"settings": s,
+		"settings": settingToJSON(*s),
 	})
 }
 
@@ -62,6 +75,6 @@ func setSetting(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, echo.Map{
-		"setting": s,
+		"setting": settingToJSON(*s),
 	})
 }
