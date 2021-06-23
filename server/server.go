@@ -23,6 +23,7 @@ func Start(port string) error {
 	e := echo.New()
 	e.Validator = &customValidator{validator: validator.New()}
 	e.Use(middleware.Logger(), middleware.CORS())
+	e.Static("/uploads", "./uploads")
 
 	v1.Register(e)
 
