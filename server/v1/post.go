@@ -28,7 +28,7 @@ func postToJSON(p post.Post) bson.M {
 
 	return bson.M{
 		"id":         p.ID.Hex(),
-		"user":       u,
+		"user":       userToJSON(*u),
 		"title":      p.Title,
 		"content":    p.Content,
 		"categories": categories,

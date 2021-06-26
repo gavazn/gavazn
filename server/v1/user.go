@@ -42,7 +42,6 @@ func userToJSON(u user.User) bson.M {
 		"name":       u.Name,
 		"about":      u.About,
 		"email":      u.Email,
-		"password":   u.Password,
 		"super_user": u.SuperUser,
 		"thumbnail":  t,
 		"created_at": u.CreatedAt,
