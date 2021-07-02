@@ -22,7 +22,11 @@ type postForm struct {
 }
 
 func postToJSON(p post.Post) bson.M {
-	u, _ := user.FindOne(bson.M{"_id": p.User})
+	u, err := user.FindOne(bson.M{"_id": p.User})
+	if err != nil {
+		u = new(user.User)
+	}
+
 	categories := category.Find(bson.M{"_id": bson.M{"$in": p.Categories}}, 1, -1)
 	t, _ := media.FindOne(bson.M{"_id": p.Thumbnail})
 
@@ -194,6 +198,8 @@ func removePost(ctx echo.Context) error {
  * @apiGroup Post
  *
  * @apiParam {String} q query search
+ * @apiParam {String} user user id
+ * @apiParam {String} category category id
  * @apiParam {Number} page list page
  * @apiParam {Number} limit list limit
  * @apiParam {String} sort sort list example -created,title,...
@@ -212,6 +218,14 @@ func listPosts(ctx echo.Context) error {
 
 	if q := ctx.QueryParam("q"); q != "" {
 		filter["$text"] = bson.M{"$search": q}
+	}
+
+	if userID, _ := primitive.ObjectIDFromHex(ctx.QueryParam("user")); !userID.IsZero() {
+		filter["_user"] = userID
+	}
+
+	if categoryID, _ := primitive.ObjectIDFromHex(ctx.QueryParam("category")); !categoryID.IsZero() {
+		filter["_categories"] = categoryID
 	}
 
 	posts := post.Find(filter, page, limit, ctx.Get("sort").(bson.D)...)
