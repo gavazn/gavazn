@@ -176,6 +176,13 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "thumbnail",
+            "description": "<p>thumbnail id</p>"
           }
         ]
       }
@@ -239,6 +246,13 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "thumbnail",
+            "description": "<p>thumbnail id</p>"
           }
         ]
       }
@@ -1043,6 +1057,20 @@ define({ "api": [
             "optional": false,
             "field": "q",
             "description": "<p>query search</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>user id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category",
+            "description": "<p>category id</p>"
           },
           {
             "group": "Parameter",
