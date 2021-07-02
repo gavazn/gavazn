@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Gavazn/Gavazn/internal/category"
+	"github.com/Gavazn/Gavazn/internal/media"
 	"github.com/Gavazn/Gavazn/internal/user"
 	"github.com/labstack/echo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,19 +13,22 @@ import (
 )
 
 type categoryForm struct {
-	Parent primitive.ObjectID `json:"parent" form:"parent"`
-	Name   string             `json:"name" form:"name"`
+	Parent    primitive.ObjectID `json:"parent" form:"parent"`
+	Name      string             `json:"name" form:"name"`
+	Thumbnail primitive.ObjectID `json:"thumbnail" form:"thumbnail"`
 }
 
 func categoryToJSON(c category.Category) bson.M {
 	u, _ := user.FindOne(bson.M{"_id": c.User})
 	parent, _ := category.FindOne(bson.M{"_id": c.Parent})
+	t, _ := media.FindOne(bson.M{"_id": c.Thumbnail})
 
 	return bson.M{
 		"id":         c.ID.Hex(),
 		"user":       u,
 		"parent":     parent,
 		"name":       c.Name,
+		"thumbnail":  t,
 		"created_at": c.CreatedAt,
 	}
 }
@@ -37,6 +41,7 @@ func categoryToJSON(c category.Category) bson.M {
  *
  * @apiParam {String} parent parent
  * @apiParam {String} name name
+ * @apiParam {String} thumbnail thumbnail id
  *
  * @apiSuccess {String} message success message.
  * @apiSuccess {Object} category category model
@@ -52,9 +57,10 @@ func addCategory(ctx echo.Context) error {
 	}
 
 	c := &category.Category{
-		User:   u.ID,
-		Parent: form.Parent,
-		Name:   form.Name,
+		User:      u.ID,
+		Parent:    form.Parent,
+		Name:      form.Name,
+		Thumbnail: form.Thumbnail,
 	}
 
 	if err := c.Save(); err != nil {
@@ -75,6 +81,7 @@ func addCategory(ctx echo.Context) error {
  *
  * @apiParam {String} parent parent
  * @apiParam {String} name name
+ * @apiParam {String} thumbnail thumbnail id
  *
  * @apiSuccess {String} message success message.
  * @apiSuccess {Object} category category model
@@ -99,6 +106,7 @@ func editCategory(ctx echo.Context) error {
 
 	c.Parent = form.Parent
 	c.Name = form.Name
+	c.Thumbnail = form.Thumbnail
 
 	if err := c.Save(); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})

@@ -17,6 +17,7 @@ type Category struct {
 	User      primitive.ObjectID `bson:"_user" json:"user"`
 	Parent    primitive.ObjectID `bson:"_parent" json:"parent"`
 	Name      string             `bson:"name" json:"name"`
+	Thumbnail primitive.ObjectID `bson:"thumbnail" json:"thumbnail"`
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 
