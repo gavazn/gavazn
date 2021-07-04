@@ -26,8 +26,13 @@ type Path struct {
 }
 
 var supportFormat = []string{
+	"image/*",
 	"image/jpeg",
 	"image/png",
+	"image/webm",
+	"image/webp",
+	"image/jpg",
+	"video/*",
 	"video/mpeg",
 	"video/x-msvideo",
 	"video/x-matroska",
