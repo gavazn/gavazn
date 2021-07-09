@@ -19,6 +19,9 @@ func Register(e *echo.Echo) {
 	r := v1.Group("/")
 	r.Use(middleware.JWT(secretKey), checkSorts, setUser)
 
+	dashboardGroup := r.Group("dashboard")
+	dashboardGroup.GET("", getStatistics)
+
 	profileGroup := r.Group("profile")
 	profileGroup.GET("", getProfile)
 	profileGroup.PUT("", editProfile)
