@@ -633,6 +633,63 @@
     "groupTitle": "Comment"
   },
   {
+    "type": "get",
+    "url": "/api/v2/dashboard",
+    "title": "get statistics",
+    "version": "1.0.0",
+    "name": "getStatistics",
+    "group": "Dashboard",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "total_posts",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "total_categories",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "total_comments",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "total_users",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "error",
+            "description": "<p>api error message</p>"
+          }
+        ]
+      }
+    },
+    "filename": "server/v1/dashboard.go",
+    "groupTitle": "Dashboard"
+  },
+  {
     "type": "post",
     "url": "/api/v1/medias",
     "title": "add media",
